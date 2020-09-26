@@ -1,6 +1,7 @@
 
 
 // 防止变量污染, 闭包colsure
+// semichange 尝试改变fork的项目
 !function (){
 
 // 构造函数 类 首字母大写
