@@ -1,7 +1,7 @@
 
 
 // 防止变量污染, 闭包colsure
-!function (){
+;function (){
 
 // 构造函数 类 首字母大写
 // @obj 是jquery对象 , 包含选择的元素对象集合
