@@ -2,33 +2,41 @@
 
 // 防止变量污染, 闭包colsure, 并传递jQuery对象
 ;(function ($){
-
-// 构造函数 类 首字母大写
-// @obj 是jquery对象 , 包含选择的元素对象集合
-// @options 选项
-// return null
+    console.log("colsure is exec");
+    // 构造函数 类 首字母大写
+    // @obj 是jquery对象 , 包含选择的元素对象集合
+    // @options 选项
+    // return null
     var STab = function(obj,options){
         // 这里的this是 s_tab对象
         // 对象属性
-        // this.element 是 最外层的 box
+        // obj => jquery对象
+        // this.element => jqurey对象
         this.element = obj;
         // 默认配置
         this.defaults = {
-            tabType:'H',             // 选项卡类型 H 水平 V 垂直
+            tabType:"H",             // 选项卡类型 H 水平 V 垂直
             defaultSelectedTab:0,    // 默认选中的tab
+            defaultTabBg:"none",     // 默认的tab背景色
+            hoverTabBg:"#ddd",       // 鼠标经过的tab背景色
+            selectedTabBg:"#aaa",    // 选中的tab背景色
         };
         // 合并选项
         this.setting = $.extend({}, this.defaults, options);
 
-        console.log(">>","STab调用","对象集合",obj);
+        console.log("STab() called","obj",obj);
+        //
+        return this;
     };
 
-// 在对象原型上添加方法
+    // 在对象原型上添加方法
     STab.prototype = {
         // 设置box样式
         setBoxStyle:function (){
-            console.log(">>","box调用");
-            // 这里的this是STab对象
+            console.log("setBoxStyle() called");
+            // console.log("--",this.defaults.selectedTabBg);
+            // this => STab对象
+            // this.element => Jquery 对象集合
             // 返回jquery 对象
             return this.element.css({
                 width:'100%',
@@ -46,7 +54,7 @@
 
         // 设置Ul样式
         setUlStyle:function(){
-            console.log(">>","Ul调用");
+            console.log("setUlStyle() called");
             return this.element.children().css({
                 listStyleType:'none',
                 height: '100%',
@@ -67,7 +75,7 @@
         // 隐藏所有 .s-tab-body
         hideAllTabBody:function()
         {
-            console.log(">>","hideAllTabBody");
+            console.log("hideAllTabBody() called");
             var boxWidth  = this.getBoxWidth();
             // 设置 tab-body 样式
             this.element.find('.s-tab-body').css({
@@ -91,7 +99,7 @@
             this.hideAllTabBody();
             // 设置 header 背景色
             this.element.find('.s-tab-header').eq(tabIndex).css({
-                background:'#aaa'
+                background:this.setting.selectedTabBg
             });
             // 设置 body 显示
             this.element.find('.s-tab-body').eq(tabIndex).css({
@@ -101,6 +109,7 @@
 
         // 设置Li样式
         setLiStyle:function(){
+            var _this = this;
             // 隐藏所有tab body
             this.hideAllTabBody();
             // li的个数
@@ -108,21 +117,20 @@
             allLi.css({
                 cursor:'pointer',
             });
+            // console.log(">>>>",this.defaults);
             allLi.hover(function(){
-                $(this).css("background","#ddd");
+                $(this).css("background",_this.setting.hoverTabBg);
             },function(){
-                $(this).css("background",'none');
+                $(this).css("background",_this.setting.defaultTabBg);
             });
             // jquery集合 默认有 length属性
             var liLen= $(allLi).length;
-            console.log(">>","allLi",allLi);
-            console.log(">>","Li调用");
+            console.log("setLiStyle() called",allLi);
 
             // console.log("1",boxWidth);
-            var _this = this;
 
             // 遍历
-            allLi.each(function(index,ele){
+            return allLi.each(function(index,ele){
                 // each 里面的 this 是 单个元素 element
                 // console.log("2",boxWidth);
                 // console.log("singleLi ele==this",ele,this);
@@ -157,19 +165,7 @@
                 // .children(".s-tab-body").attr("");
 
 
-                // console.log(">>",this);
-
-                // 选中默认tabIndex
-                if( index==_this.setting.defaultSelectedTab )
-                {
-                    $(ele).children('.s-tab-header').css({
-                        background:'#aaa'
-                    });
-                    $(ele).children('.s-tab-body').css({
-                        display:'block'
-                    });
-                }
-
+                // console.log("--",this);
             });
 
 
@@ -178,14 +174,31 @@
 
 
         },
+        test:function(str)
+        {
+            console.log("STab.test called",str);
+        },
 
         // 初始化
         init:function(){
             // 链式调用只支持jquery, 这里的this是STab对象
             // 如何 支持 链式 ?  this.setBoxStyle().setUlStyle()?
+            // this => STab对象
             this.setBoxStyle();
             this.setUlStyle();
             this.setLiStyle();
+
+            // 选中默认tabIndex
+            if( this.setting.defaultSelectedTab>=0 )
+            {
+                // $(ele).children('.s-tab-header').css({
+                //     background:'#aaa'
+                // });
+                // $(ele).children('.s-tab-body').css({
+                //     display:'block'
+                // });
+                this.setTabSwitch(this.setting.defaultSelectedTab);
+            }
 
             // 返回 STab类
             return this;
@@ -193,13 +206,40 @@
         }
     };
 
-// 在jquery对象的fn对象上 扩展函数
-// 插件中使用Beautifier对象
+    // 在jquery对象的fn对象上 扩展函数
+    // 插件中使用Beautifier对象
     $.fn.sTabP = function(options) {
-        //创建STab的实体
-        // 传递 jquery 对象集合 进去
-        var stab = new STab(this, options);
-        //调用 初始化其方法
-        return stab.init();
+        console.log("typeof options",typeof options);
+        console.log("STab",STab);
+        STab.prototype.test("hello");
+
+        // 这里 this是 对象集合
+        // 判断参数类型
+        if(typeof options == "string")
+        {
+            // 调用方法
+            console.log("options is string");
+            // STab["test"]();
+            STab.prototype[options].apply(this,Array.prototype.slice.call( arguments, 1 ));
+
+        }
+        else if( typeof options == "object"||!options )
+        {
+            //创建STab的实体
+            // 传递 jquery 对象集合 进去
+            console.log("options is {}");
+            var stab = new STab(this, options);
+            //调用 初始化其方法
+            return stab.init();
+        }
+        else
+        {
+
+            console.log( 'Method ' +  options + ' does not exist on jQuery plugin' );
+
+        }
+
+
     };
-})(jQuery);
+
+})(window.jQuery);

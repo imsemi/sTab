@@ -11,9 +11,12 @@
     <script src="../sTab.js"></script>
     <script>
         $(function(){
-            var stab = $("#box").sTabP({});
+            var stab = $("#box").sTabP({
+                hoverTabBg:"lightblue"
+            });
             // 设置选中
             stab.setTabSwitch(2);
+            $("#box").sTabP("test","你好");
         });
     </script>
 </head>
