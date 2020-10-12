@@ -1,5 +1,6 @@
 
 
+
 // 防止变量污染, 闭包colsure, 并传递jQuery对象
 ;(function ($){
     console.log("colsure is exec");
